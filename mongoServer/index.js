@@ -10,23 +10,43 @@ const database = process.env.MONGO_DATABASE; // assuming 'test' is your database
 const options = "retryWrites=true&w=majority"; // your connection options
 
 const mongoUri = `mongodb+srv://${username}:${password}@${cluster_address}/${database}?${options}`;
-const client = new MongoClient(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const client = new MongoClient(mongoUri);
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+console.log("connection is successful");
+
 async function main() {
   try {
     await client.connect();
-    const database = client.db("ItemsCLicks");
-    const links = database.collection("links");
+    const database = client.db("Database");
+    const links = database.collection("FrameCollection");
+
+    app.post("/links", async (req, res) => {
+      // Assuming the body contains { timestamp: value }
+      const timestampQuery = req.body.timestamp;
+      console.log("timestampQuery", timestampQuery);
+
+      // Ensure that timestampQuery is a number, as expected by the database
+      if (typeof timestampQuery !== "number") {
+        return res.status(400).json({ message: "Invalid timestamp format" });
+      }
+
+      try {
+        const cursor = links.find({ timestamp: timestampQuery });
+        const results = await cursor.toArray();
+        res.status(200).json(results);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        res.status(500).json({ message: "Internal server error" });
+      }
+    });
 
     // Endpoint to record a link click
     app.post("/recordClick", async (req, res) => {
       const { link } = req.body;
+      console.log("link", req.body);
       const result = await links.updateOne(
         { link },
         { $inc: { clicks: 1 } },
