@@ -29,8 +29,9 @@ async function main() {
       console.log("timestampQuery", timestampQuery);
 
       // Ensure that timestampQuery is a number, as expected by the database
-      if (typeof timestampQuery !== "number") {
-        return res.status(400).json({ message: "Invalid timestamp format" });
+      if (typeof timestampQuery === "number") {
+        res.status(400).json({ message: "Invalid timestamp" });
+        return;
       }
 
       try {
