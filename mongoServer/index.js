@@ -25,17 +25,17 @@ async function main() {
 
     app.post("/links", async (req, res) => {
       // Assuming the body contains { timestamp: value }
-      const timestampQuery = req.body.timestamp;
+      let timestampQuery = req.body.timestamp;
+      let video_id = req.body.video_id;
       console.log("timestampQuery", timestampQuery);
+      console.log("video_id", video_id);
 
       // Ensure that timestampQuery is a number, as expected by the database
-      if (typeof timestampQuery === "number") {
-        res.status(400).json({ message: "Invalid timestamp" });
-        return;
-      }
-
       try {
-        const cursor = links.find({ timestamp: timestampQuery });
+        const cursor = links.find({
+          timestamp: timestampQuery,
+          video_id: video_id,
+        });
         const results = await cursor.toArray();
         res.status(200).json(results);
       } catch (error) {
