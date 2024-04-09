@@ -31,6 +31,11 @@ async function main() {
       console.log("video_id", video_id);
 
       // Ensure that timestampQuery is a number, as expected by the database
+      if (typeof timestampQuery === "number") {
+        res.status(400).json({ message: "Invalid timestamp" });
+        return;
+      }
+
       try {
         const cursor = links.find({
           timestamp: timestampQuery,
