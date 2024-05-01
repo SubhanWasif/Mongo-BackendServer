@@ -25,16 +25,16 @@ async function main() {
 
     app.post("/links", async (req, res) => {
       // Assuming the body contains { timestamp: value }
-      let NumberFrame = req.body.NumberFrame;
+      let timestamp = req.body.timestamp;
       let video_id = req.body.video_id;
-      console.log("NumberFrame",NumberFrame)
+      console.log("timestamp",timestamp)
       console.log("video_id", video_id);
 
       // Ensure that timestampQuery is a number, as expected by the database
 
       try {
         const cursor = links.find({
-          NumberFrame: NumberFrame,
+          timestamp: timestamp,
           video_id: video_id,
         });
         const results = await cursor.toArray();
